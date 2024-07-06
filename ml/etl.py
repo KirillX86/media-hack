@@ -180,6 +180,6 @@ class DataPreprocessor:
             .assign(male=lambda df_: df_['income'].apply(lambda x: 1 if 'c' in x else 0))
             .assign(female=lambda df_: df_['gender'].apply(lambda x: 1 if x in ['female', 'all'] else 0))
             .assign(num_points=lambda df_: df_['points'].apply(lambda l: len(l)))
-            .drop(columns=['hash', 'targetAudience', 'points', 'income', 'name', 'gender', 'id'])
+            .drop(columns=['hash', 'targetAudience', 'points', 'income', 'name', 'gender'])
         )
         return df_clusters

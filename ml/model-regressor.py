@@ -11,11 +11,23 @@ from etl import Clusterizer, DataPreprocessor
 app = FastAPI()
 
 
-# Define a request model
+# Define a request model to match the JSON structure
+class TargetAudience(BaseModel):
+    name: str
+    gender: str
+    ageFrom: int
+    ageTo: int
+    income: str
+
+class Point(BaseModel):
+    lat: str
+    lon: str
+    azimuth: int
+
 class PredictionRequest(BaseModel):
     hash: str
-    targetAudience: dict
-    points: List
+    targetAudience: TargetAudience
+    points: List[Point]
 
 
 # Define a response model
@@ -38,10 +50,28 @@ def predict(request: PredictionRequest):
     :param request:
     :return:
     """
-    data = pd.read_json(request, typ='series').to_frame().T
-    data_processed = processor.preprocess(df=data)
-    prediction = model.predict(data_processed)
-    return {"prediction": prediction}
+    # Convert points to DataFrame
+    points_data = [{'lat': point.lat, 'lon': point.lon, 'azimuth': point.azimuth} for point in request.points]
+    df_points = pd.DataFrame(points_data)
+
+    # Prepare the data for preprocessing
+    data = {
+        'hash': request.hash,
+        'targetAudience': request.targetAudience.dict(),
+        'points': df_points.to_dict(orient='records')
+    }
+    df = pd.DataFrame([data])
+
+    # Preprocess the data
+    data_processed = processor.preprocess(df)
+
+    # Extract features for prediction
+    features = data_processed.values
+
+    # Make prediction using the loaded model
+    prediction = model.predict(features)
+
+    return {"prediction": prediction[0]}
 
 
 # Run the FastAPI app
