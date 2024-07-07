@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -56,7 +56,7 @@ class Clusterizer:
 
         return groups
 
-    def assign_clusters(self, row):
+    def assign_clusters(self, row) -> List:
         points = np.array([[float(x['lat']), float(x['lon'])] for x in row])
         group_values = self.sort_on_groups(
             points[:, 0], points[:, 1], self.x_intervals, self.y_intervals, self.groups.copy(), only_vals=True
@@ -79,7 +79,13 @@ class DataPreprocessor:
         self.clusterizer = clusterizer
 
     @staticmethod
-    def calculate_distances(row, centre_coordinates: List[float]) -> List[float]:
+    def calculate_distances(row: List[dict], centre_coordinates: List[float]) -> List[float]:
+        """
+        Calculates distances between geo-points in row and centre_coordinates and returns differences
+        :param row: List with geo-points
+        :param centre_coordinates: centre to calculate distance from
+        :return: List of differences
+        """
         distances = [
             float(gpd.GeoSeries(Point(float(point['lat']), float(point['lon']))) \
                   .distance(Point(centre_coordinates))) for point in row
@@ -87,7 +93,7 @@ class DataPreprocessor:
         return distances
 
     @staticmethod
-    def inner_cluster_stats(df: pd.DataFrame, cluster_centre=None) -> pd.DataFrame:
+    def inner_cluster_stats(df: pd.DataFrame, cluster_centre: Tuple[float] = None) -> pd.DataFrame:
         """
         Accepts DataFrame with geo points and returns statistics of this cluster of points
         :param df: pd.DataFrame with two columns: `lat` and `lon`
@@ -112,7 +118,6 @@ class DataPreprocessor:
             'c_mean_lon_trimmed': np.std(df['lon'] - cluster_centre[1]),
             'c_std_lat_trimmed': np.std(df['lat'] - cluster_centre[0]),
             'c_std_lon_trimmed': np.std(df['lon'] - cluster_centre[1]),
-            #todo: add Mahalanobis distance
         }
         return pd.DataFrame([cluster_stats])
 
@@ -120,15 +125,28 @@ class DataPreprocessor:
             self,
             points_col: pd.Series,
             centre_coordinates: List[float],
-            func = np.mean,
+            func=np.mean,
             **kwargs
     ):
+        """
+        Calculates statistic of difference between provided geo-points and some geo-centre
+        :param points_col: pd.Series with geo-points
+        :param centre_coordinates: coordinates of a centre we should measure distance from
+        :param func: function to apple, e.g. np.std, np.mean. scipy.state.trim_mean, etc.
+        :param kwargs: other arguments to be passed to func
+        :return: calculated statistic
+        """
         x = points_col.apply(
             lambda row: func(self.calculate_distances(row, centre_coordinates), **kwargs)
         )
         return x
 
-    def apply_clusters_distribution(self, df) -> pd.DataFrame:
+    def apply_clusters_distribution(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Create features that represent the number of geo-points each cluster/sector has
+        :param df: pd.DataFrame with geo-points
+        :return: modified DataFrame with added columns
+        """
         cluster_columns = [f'cluster_{i}' for i in range(self.clusterizer.n_groups)]
 
         df_clusters = df.apply(lambda row: self.clusterizer.assign_clusters(row['points']), axis=1)
@@ -169,6 +187,11 @@ class DataPreprocessor:
         return df_res
 
     def preprocess(self, df) -> pd.DataFrame:
+        """
+        Transforms provided df by adding calculated statistics
+        :param df: df with geo-data
+        :return: pd.DataFrame with added columns
+        """
         df_clusters = (
             pd.concat([df, pd.json_normalize(df['targetAudience'])], axis=1)
             .pipe(self.msc_centre_statistics)

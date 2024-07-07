@@ -5,6 +5,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
+	box-sizing: border-box;
 }
 
 .header,
@@ -19,6 +20,7 @@ body {
 	flex: 1;
 	display: flex;
 	padding: 20px;
+	gap: 30px;
 }
 
 section {
@@ -36,12 +38,17 @@ section#controls label {
 	margin-bottom: 5px;
 }
 
+#target-form {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
 input,
-select,
-textarea {
+select {
 	margin-bottom: 10px;
 	padding: 5px;
-	width: 100%;
+	display: inline-block;
 }
 
 .footer {
@@ -51,10 +58,6 @@ textarea {
 #map {
 	height: 400px; /* Высота карты */
 	border: 1px solid #ccc;
-}
-
-#analysis {
-	margin-top: 20px;
 }
 
 #sector-analysis,
@@ -70,4 +73,31 @@ textarea {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
+	width: 350px;
+}
+
+#sector-results,
+#point-results {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.btn-file {
+	border-radius: 6px;
+}
+
+.btn-optimize {
+	padding: 10px;
+	background: transparent;
+	border: 1px solid#333;
+	border-radius: 6px;
+	width: 50%;
+	margin: 0 auto;
+	cursor: pointer;
+	background-color: #333;
+	color: white;
+	font-size: 16px;
+	text-transform: uppercase;
+	font-weight: bold;
 }

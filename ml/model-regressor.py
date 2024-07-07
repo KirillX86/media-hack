@@ -1,15 +1,12 @@
+import joblib
+import pandas as pd
+from typing import List
 from fastapi import FastAPI
 from pydantic import BaseModel
-import numpy as np
-import pandas as pd
-import joblib
-import pickle
-from typing import List
 from etl import Clusterizer, DataPreprocessor
 
 # Initialize FastAPI app
 app = FastAPI()
-
 
 # Define a request model to match the JSON structure
 class TargetAudience(BaseModel):
