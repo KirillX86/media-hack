@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Оптимум Лаб</title>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<link rel="stylesheet" href="./src/styles/style.css" />
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js" defer></script>
+		<!-- <script src="./src/scripts/index.js" defer></script> -->
+		<script src="./src/scripts/test.js" defer></script>
+	</head>
+	<body>
+		<header class="header">
+			<h1>Оптимум Лаб</h1>
+		</header>
+		<main class="page">
+			<section class="map">
+				<h2>Карта города с билбордами</h2>
+				<div id="map"></div>
+			</section>
+			<section id="controls">
+				<h2>Выбор целевой аудитории</h2>
+				<form id="target-form">
+					<label for="gender">Пол:</label>
+					<select id="gender" name="gender">
+						<option value="all">Все</option>
+						<option value="male">Мужчины</option>
+						<option value="female">Женщины</option>
+					</select>
+					<label for="age-range">Возраст:</label>
+					<input type="text" id="age-min" name="age-min" placeholder="18" />
+					<input type="text" id="age-max" name="age-max" placeholder="60" />
+					<label for="income">Доход:</label>
+					<select id="income" name="income">
+						<option value="low">Низкий</option>
+						<option value="medium">Средний</option>
+						<option value="high">Высокий</option>
+					</select>
+					<label for="budget">Бюджет в рублях:</label>
+					<input type="text" id="budget" name="budget" />
+					<label for="districts">Районы:</label>
+					<select id="districts" name="districts" multiple>
+						<!-- Опции будут добавлены динамически -->
+					</select>
+					<label for="price-list">Загрузить файл с ценами (CSV/Excel):</label>
+					<input
+						class="btn-file"
+						type="file"
+						id="price-list"
+						accept=".csv, .xls, .xlsx"
+					/>
+					<button type="button" id="optimize-button" class="btn-optimize">
+						Оптимизировать
+					</button>
+				</form>
+			</section>
+			<section id="analysis">
+				<h2>Анализ и результаты</h2>
+				<div id="sector-analysis">
+					<h3>Оптимальные секторы и оценка охвата</h3>
+					<ul id="sector-results"></ul>
+				</div>
+				<div id="point-analysis">
+					<h3>Прогнозное значение охвата по загруженным точкам</h3>
+					<ul id="point-results"></ul>
+				</div>
+			</section>
+		</main>
+		<footer class="footer">
+			<p>&copy; 2024 Оптимум Лаб</p>
+		</footer>
+	</body>
+</html>
