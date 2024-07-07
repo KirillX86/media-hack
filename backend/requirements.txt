@@ -1,0 +1,9 @@
+numpy==1.21.0
+catboost==1.0.4
+fastapi
+uvicorn
+gunicorn
+openpyxl
+pydantic
+sqlalchemy
+scipy
